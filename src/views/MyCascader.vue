@@ -1,5 +1,5 @@
 <template>
-  <div id="tree">
+  <div id="cascader">
     <Row>
       <Col span="6" style="text-align:center">
         <Button type="primary" @click="query">查询</Button>
@@ -7,14 +7,14 @@
         <Button @click="reset">重置</Button>
       </Col>
       <Col span="6">
-        <Tree ref="tree" :data="data" multiple show-checkbox></Tree>
+        <Cascader v-model="value" :data="data" :render-format="format" change-on-select filterable></Cascader>
       </Col>
       <Col span="12">
         <Card :bordered="false">
             <p slot="title">结果</p>
-            <p>length：{{ res.length }}</p>
-            <p>level：{{ res.level }}</p>
-            <p>all：{{ res.all }}</p>
+            <p>value：{{ value }}</p>
+            <p>query：{{ res.query }}</p>
+            <p>edit：{{ res.edit }}</p>
         </Card>
       </Col>
     </Row>
@@ -22,67 +22,67 @@
 </template>
 
 <script>
-import { getTreeValue, resetTree, setTree } from '../utils/tree'
 export default {
-  name: 'tree',
+  name: 'cascader',
   data () {
     return {
+      single: false,
+      value: [],
       res: {
-        length: -1,
-        level: [],
-        all: [],
+        query: '',
+        edit: []
       },
       data: [
         {
-          level: 1,
-          title: '湖南',
+          father: 'China',
+          label: '湖南',
           value: 'Hunan',
           expand: true,
           children: [
             {
-              level: 2,
-              title: '长沙',
+              father: 'Hunan',
+              label: '长沙',
               value: 'Changsha',
               expand: true,
               children: [
                 {
-                  level: 3,
-                  title: '浏阳',
+                  father: 'Changsha',
+                  label: '浏阳',
                   value: 'Liuyang'
                 },
                 {
-                  level: 3,
-                  title: '星沙',
+                  father: 'Changsha',
+                  label: '星沙',
                   value: 'Xingsha'
                 }
               ]
             },
             {
-              level: 2,
-              title: '永州',
+              father: 'Hunan',
+              label: '永州',
               expand: true,
               value: 'Yongzhou',
               children: [
                 {
-                  level: 3,
-                  title: '祁阳',
+                  father: 'Yongzhou',
+                  label: '祁阳',
                   value: 'Qiyang',
                   children: [
                     {
-                      level: 4,
-                      title: '八宝',
+                      father: 'Qiyang',
+                      label: '八宝',
                       value: 'Babao'
                     },
                     {
-                      level: 4,
-                      title: '白水',
+                      father: 'Qiyang',
+                      label: '白水',
                       value: 'Baishui'
                     }
                   ]
                 },
                 {
-                  level: 3,
-                  title: '蓝山',
+                  father: 'Yongzhou',
+                  label: '蓝山',
                   value: 'Lanshan'
                 }
               ]
@@ -94,29 +94,21 @@ export default {
   },
   methods: {
     query() {
-      this.res = {
-        length: -1,
-        level: [],
-        all: []
-      }
-      const data = this.$refs.tree.getCheckedNodes();
-      this.res.length = data.length;
-      let level = [1,4];
-      this.res.level = getTreeValue(data, level);
-      this.res.all = getTreeValue(data, []);
+      this.res.query = this.value[this.value.length-1];
     },
     edit() {
-      resetTree(this.data);
-      const value = ['Babao','Lanshan'];
-      this.data = setTree(this.data, value);
+      this.value = ['Hunan','Yongzhou','Qiyang','Baishui'];
     },
     reset() {
-      resetTree(this.data);
+      this.value = [];
+    },
+    format(label) {
+      return label.pop();
     }
   }
 }
 </script>
 
-<style>
-
+<style scoped>
+    
 </style>
